@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bolval OS 1.0 — Universal LFS Meta-Distribution</title>
+    <!-- Подключаем стили -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <!-- Холст для падающего кода Матрицы на фоне -->
+    <canvas id="matrix-bg"></canvas>
+
+    <!-- Обертка для всего контента сайта -->
+    <main class="content-wrapper">
+
+        <!-- Кнопка выбора языка в верхнем углу -->
+        <div class="lang-switcher-container">
+            <select id="lang-select" onchange="setLanguage(this.value)">
+                <option value="en">🌐 English</option>
+                <option value="ru">🌐 Русский</option>
+                <option value="zh">🌐 简体中文</option>
+            </select>
+        </div>
+
+        <!-- Шапка сайта с цветным логотипом Tux + Миньон -->
+        <header class="hero-section">
+            <div class="logo-container">
+                <img src="system_logo.png" alt="Bolval OS Logo" class="main-system-logo">
+            </div>
+            <h1 class="main-title">BOLVAL OS</h1>
+            <h2 class="hero-subtitle" data-translate="subtitle">The World's First Truly Universal Linux Distribution v1.0</h2>
+            <p class="hero-desc" data-translate="desc">Релиз 1.0. Один дистрибутив Linux From Scratch для всего: от ThinkPad 1999 года до Steam Deck, PlayStation 5, телевизоров LG и смартфонов vivo iQOO.</p>
+        </header>
+
+        <!-- АНКЕТА И ТЕРМИНАЛ GRUB -->
+        <section class="wizard-section">
+            <h2 data-translate="selectDevice">🎯 Выбери своё устройство:</h2>
+            <div class="wizard-form">
+                <select id="q-device" onchange="findMyVersion()">
+                    <option value="pc-console">Компьютер / Ноутбук (ThinkPad) / PlayStation</option>
+                    <option value="router">Домашний роутер</option>
+                    <option value="tv-intercom">Телевизор LG Smart TV (webOS)</option>
+                    <option value="retail">Касса супермаркета (Магнит/Пятёрочка) / Пекарня</option>
+                    <option value="education">Школьный компьютерный класс</option>
+                    <option value="medical">Компьютер в больнице / Поликлинике</option>
+                    <option value="kozen-p12">Биометрический терминал Kozen P12</option>
+                    <option value="atm-edition">Банкомат (Сбербанк / Т-Банк)</option>
+                </select>
+
+                <select id="q-power" onchange="findMyVersion()">
+                    <option value="new">Современное железо (x86-64-v3 / ARM64)</option>
+                    <option value="old">Старое / Слабое железо (ThinkPad 1999, MIPS)</option>
+                </select>
+
+                <select id="q-mode" onchange="findMyVersion()">
+                    <option value="gui">Новичок (Графика + Calamares)</option>
+                    <option value="tty">Хардкорщик (Чистый TTY / Для терпил)</option>
+                </select>
+            </div>
+
+            <!-- Интерактивное меню GRUB -->
+            <div id="spec-box" class="grub-selector">
+                <p class="terminal-comment"># Переключатель режимов загрузки в grub.cfg:</p>
+                <div class="mode-buttons">
+                    <button class="btn-mode active" id="btn-novice" onclick="changeGrubMode('novice')" data-translate="noviceBtn">👶 Для новичков (GUI)</button>
+                    <button class="btn-mode" id="btn-terpila" onclick="changeGrubMode('terpila')" data-translate="terpilaBtn">💀 Для терпил (TTY / Gentoo-Style)</button>
+                </div>
+                <pre class="grub-code-block"><code id="grub-display">Loading grub.cfg...</code></pre>
+                <p class="terminal-comment" data-translate="mellstroyBait">🚀 ООО «Болваос» — мы не просто делаем Linux From Scratch. Мы переворачиваем индустрию. Скоро во всех ИТ-челленджах планеты.</p>
+            </div>
+
+            <!-- Блок выдачи ссылки на скачивание -->
+            <div id="download-zone" class="download-card" style="display:none;">
+                <h3 id="result-name"></h3>
+                <p id="result-desc"></p>
+                <div class="download-actions">
+                    <a id="result-link" href="#" class="btn-download">💾 Скачать образ (.iso / .bin / .img)</a>
+                    <button onclick="openModal()" class="btn-instruction" data-translate="instructionBtn">📖 Инструкция по установке рядом с Windows</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- ВСТРОЕННЫЙ МЕДИАПЛЕЕР LIBVLC -->
+        <section class="player-section">
+            <h2 data-translate="playerTitle">📺 Медиаплеер Bolval (на движке libVLC)</h2>
+            <div class="video-container">
+                <!-- Тестовая картинка с Линусом-Терминатором -->
+                <img id="video-canvas" src="linus_terminator.png" alt="Bolval OS Video Test">
+                
+                <div class="player-controls">
+                    <button class="btn-play" onclick="playVideo()">▶ BOOT</button>
+                    <button class="btn-pause" onclick="pauseVideo()">⏸ PAUSE</button>
+                    <div class="progress-bar"><div class="progress-fill"></div></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ОСОБЕННОСТИ СИСТЕМЫ (Пакетник и ФС) -->
+        <section class="features-grid">
+            <div class="feature-card">
+                <h3 data-translate="featuresTitle">🤖 Нативная поддержка APK</h3>
+                <p data-translate="featuresDesc">Благодаря встроенному контейнеру Waydroid, Bolval OS на телевизорах LG позволяет запускать любые Android-приложения!</p>
+            </div>
+            <div class="feature-card">
+                <h3 data-translate="fsTitle">🗄️ Собственная файловая система: BurmaldaFS (Atomic Read-Only с ультра-сжатием ZSTD)</h3>
+                <p data-translate="fsDesc">Забудьте про Ext4 и NTFS! Собственная файловая система Burmalda от ООО «Болваос» защищает диски от поломок при сбоях питания и ускоряет чтение данных на SSD в 2.5 раза.</p>
+            </div>
+        </section>
+
+        <!-- КОММЕРЧЕСКИЕ ТАРИФЫ ООО БОЛВАОС -->
+        <section class="pricing-section">
+            <h2 data-translate="pricingTitle">💼 Коммерческая поддержка и лицензирование от ООО «Болваос»</h2>
+            <p class="pricing-subtitle" data-translate="pricingSubtitle">Готовые решения для автоматизации вашей ИТ-инфраструктуры</p>
+            
+            <div class="pricing-grid">
+                <div class="price-card">
+                    <h3 data-translate="tier1Name">🥐 Bolval Retail Lite</h3>
+                    <div class="price-tag" data-translate="tier1Price">990 ₽ <span>/ мес.</span></div>
+                    <p data-translate="tier1Desc">Для пекарен, кафе и небольших магазинов. Включает прошивку под сенсорные моноблоки, интеграцию с кассами АТОЛ и интерфейс с большими кнопками.</p>
+                </div>
+                <div class="price-card featured">
+                    <div class="badge" data-translate="badgePopular">Популярно</div>
+                    <h3 data-translate="tier2Name">🏢 Enterprise Infrastructure</h3>
+                    <div class="price-tag" data-translate="tier2Price">4 900 ₽ <span>/ устройство</span></div>
+                    <p data-translate="tier2Desc">Для школ, больниц и крупных торговых сетей. Удаленное управление классом Veyon, шифрование ГОСТ, поддержка DICOM-снимков и кастомный пакетный менеджер XBX с поддержкой ручной компиляции из исходников по флагам -O3.</p>
+                </div>
+                <div class="price-card">
+                    <h3 data-translate="tier3Name">🏦 FinTech Core</h3>
+                    <div class="price-tag" data-translate="tier3Price">По запросу</div>
+                    <p data-translate="tier3Desc">Для банкоматов Сбера, Т-Банка и биометрических терминалов Kozen P12. Сертификация PCI DSS, интеграция со слоем InterSphere и защита Secure MCU.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- ТЕХНОЛОГИЧЕСКОЕ СОДРУЖЕСТВО (ПАРТНЕРЫ) -->
+        <section class="partners-section">
+            <h2 data-translate="partnersTitle">🤝 Технологическое содружество</h2>
+            <p class="partners-subtitle" data-translate="partnersSubtitle">Bolval OS 1.0 развивается содружеством ООО «Болваос» и ведущих ИТ-компаний</p>
+            
+            <div class="partners-grid">
+                <div class="partner-logo-card">
+                    <h3>Yandex</h3>
+                    <p data-translate="partnerYandex">Интеграция Яндекс Браузера, голосового ассистента Алиса и высокоскоростных репозиториев XBX в Yandex Cloud.</p>
+                </div>
+                <div class="partner-logo-card">
+                    <h3>VK Group</h3>
+                    <p data-translate="partnerVK">Встроенный магазин приложений RuStore, интеграция медиа-сервисов VK и оптимизация для мобильных устройств.</p>
+                </div>
+                <div class="partner-logo-card">
+                    <h3>Kaspersky</h3>
+                    <p data-translate="partnerKaspersky">Защита ядра Linux CachyOS модулями Kaspersky SDK. Безопасность финансовых транзакций в банкоматах и ритейле.</p>
+                </div>
+                <div class="partner-logo-card">
+                    <h3>NVIDIA</h3>
+                    <p data-translate="partnerNvidia">Встроенная поддержка проприетарных драйверов NVIDIA, автоматическое переключение графических слоев и оптимизация Vulkan/Mesa для максимального FPS в играх через Steam.</p>
+                </div>
+                <div class="partner-logo-card">
+                    <h3>Valve</h3>
+                    <p data-translate="partnerValve">Полная интеграция с игровым слоем Valve Proton и композитором Gamescope. Максимальная производительность Steam Deck и автозапуск Steam Big Picture в один клик.</p>
+                </div>
+                <div class="partner-logo-card">
+
